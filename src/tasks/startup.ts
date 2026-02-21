@@ -21,12 +21,15 @@ import {
     canAdventure,
     cliExecute,
     drink, Effect, equip, haveEffect, hippyStoneBroken, inHardcore,
-    itemAmount, max, mpCost,
+    itemAmount, length, max, mpCost,
     myClass, myGardenType, myMp, pullsRemaining, restoreMp,
     Skill, turnsPerCast,
     use,
     useSkill,
-    visitUrl
+    visitUrl,
+    storageAmount,
+    mallPrice,
+    toInt,
 } from "kolmafia";
 import {args} from "../args";
 import {pull} from "../util";
@@ -41,23 +44,41 @@ export const StartupQuest: Quest = {
             ready: () => !inHardcore(),
             completed: () => inHardcore() || (pullsRemaining() < 20),
             do: () => {
-                pull($item`pro skateboard`);
-                pull($item`shark jumper`);
-                pull($item`Flash Liquidizer Ultra Dousing Accessory`);
-                pull($item`spooky VHS tape`);
-                pull($item`sea lasso`);
-                pull($item`sea cowbell`);
-                pull($item`lodestone`);
-                pull($item`Mer-kin pinkslip`)
-                pull($item`stuffed yam stinkbomb`);
-                pull($item`handful of split pea soup`);
-                pull($item`anchor bomb`);
-                pull($item`Platinum Yendorian Express Card`);
-                pull($item`ink bladder`);
-                pull($item`Mer-kin sneakmask`);
-                // cliExecute("pull phosphor traces");
-                if (!have($item`Platinum Yendorian Express Card`)) {
-                    pull($item`minin' dynamite`);
+                const potentialPulls = [
+                    $item`pro skateboard`,
+                    $item`shark jumper`,
+                    $item`Flash Liquidizer Ultra Dousing Accessory`,
+                    $item`spooky VHS tape`,
+                    $item`sea lasso`,
+                    $item`sea cowbell`,
+                    $item`lodestone`,
+                    $item`Mer-kin pinkslip`,
+                    $item`stuffed yam stinkbomb`,
+                    $item`handful of split pea soup`,
+                    $item`anchor bomb`,
+                    $item`Platinum Yendorian Express Card`,
+                    $item`ink bladder`,
+                    $item`Mer-kin sneakmask`,
+                    $item`minin' dynamite`,
+                ]
+                const pullsWorth = new Map ([
+                    [toInt($item`spooky VHS tape`), 2],
+                    [toInt($item`sea lasso`), 16500/get("valueOfAdventure")],//16500 as the worth of a Barf monkey wish
+                    [toInt($item`sea cowbell`), 16500/get("valueOfAdventure")],
+                    [toInt($item`Mer-kin pinkslip`), 1],
+                    [toInt($item`stuffed yam stinkbomb`), 1],
+                    [toInt($item`handful of split pea soup`), 1],
+                    [toInt($item`anchor bomb`), 1],
+                    [toInt($item`ink bladder`), .8],
+                    [toInt($item`minin' dynamite`), 1],
+                ])
+                for ( let i = 0; i < potentialPulls.length; i++) {
+                    let x = potentialPulls[i];
+                    if ( !(x == $item`minin' dynamite` && have($item`Platinum Yendorian Express Card`))
+                        && (!pullsWorth.has(toInt(x)) || (pullsWorth.get(toInt(x))??0 * get("valueOfAdventure") > mallPrice(x)))
+                        && (storageAmount(x) > 0 || mallPrice(x) < get("autoBuyPriceLimit"))) {
+                            pull(x);
+                    }
                 }
             },
             free: true
