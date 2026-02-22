@@ -13,7 +13,7 @@ import {
     Macro
 } from "libram";
 import {CombatStrategy} from "grimoire-kolmafia";
-import {cliExecute, holiday, inHardcore, mpCost, myHash, myMp, print, use, useSkill, visitUrl} from "kolmafia";
+import {cliExecute, holiday, inHardcore, mpCost, myHash, myMp, print, use, useSkill, visitUrl, haveSkill, itemAmount} from "kolmafia";
 
 
 export const ShadowRealmTask : Quest = {
@@ -31,7 +31,7 @@ export const ShadowRealmTask : Quest = {
                 }
             }),
             free: true,
-            effects: $effects`The Ballad of Richie Thingfinder, Chorale of Companionship`
+            effects: (haveSkill($skill`The Ballad of Richie Thingfinder`) && haveSkill($skill`The Chorale of Companionship`)) ? $effects`The Ballad of Richie Thingfinder, Chorale of Companionship` : $effects`Chorale of Companionship`,
             // post: () => abort()
         },
         {
@@ -63,7 +63,7 @@ export const ShadowRealmTask : Quest = {
             outfit: {
                 familiar: $familiar`Jill-of-All-Trades`,
                 modifier: "item",
-                equip: $items`Everfull Dart Holster, spring shoes, designer sweatpants, Monodent of the Sea, April Shower Thoughts shield, bat wings, toy Cupid bow, Flash Liquidizer Ultra Dousing Accessory, prismatic beret`
+                equip: $items`Everfull Dart Holster, spring shoes, Monodent of the Sea, April Shower Thoughts shield, bat wings, toy Cupid bow, Flash Liquidizer Ultra Dousing Accessory, prismatic beret, designer sweatpants`.filter(item => itemAmount(item) > 0),
             }
         },
         {

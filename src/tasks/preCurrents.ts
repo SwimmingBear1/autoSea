@@ -21,7 +21,7 @@ import {
 } from "libram";
 import {step} from "grimoire-kolmafia";
 import {CombatStrategy} from "../engine/combat";
-import {abort, adv1, cliExecute, myClass, print, useSkill} from "kolmafia";
+import {abort, adv1, cliExecute, myClass, print, use, useSkill} from "kolmafia";
 import {
     countFreeMines,
     getAsMatrix,
@@ -165,9 +165,13 @@ export const PreItemTask : Quest = {
                 have($item`crappy Mer-kin tailpiece`) || have($item`Mer-kin scholar tailpiece`) ||
                 have($item`Mer-kin gladiator tailpiece`),
             do: () => {
-                // Mining logic not implemented yet
-                print("Oh no, we ran out of free mining!");
-                abort();
+                if (!get("_lodestoneUsed")) {
+                    use($item`lodestone`);
+                } else {
+                    // Mining logic not implemented yet
+                    print("Oh no, we ran out of free mining!");
+                    abort();
+                }
             },
             outfit: {
                 equip: $items`Mer-kin digpick`,

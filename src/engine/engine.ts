@@ -12,7 +12,8 @@ import {
     numericModifier,
     use,
     create,
-    toSkill, mpCost, mySpleenUse, spleenLimit, abort, cliExecute
+    toSkill, mpCost, mySpleenUse, spleenLimit, abort, cliExecute,
+    haveSkill
 } from "kolmafia";
 import {CombatActions, CombatStrategy, MyActionDefaults} from "./combat";
 import {
@@ -138,9 +139,9 @@ export class Engine extends BaseEngine<CombatActions, Task> {
         if (have($effect`Beaten Up`)) {
             abort();
         }
-        // if (have($item`phosphor traces`) && mySpleenUse() < spleenLimit() - 3) {
-        //     use($item`phosphor traces`);
-        // }
+        /*if (have($item`phosphor traces`) && mySpleenUse() < spleenLimit() - 3) {
+            use($item`phosphor traces`);
+        }*/
         if (have($item`Grandma's Chartreuse Yarn`)) {
             cliExecute("grandpa note");
         }
@@ -171,11 +172,13 @@ export class Engine extends BaseEngine<CombatActions, Task> {
             }
             for (const ef of ncEffects) {
                 const skill = toSkill(ef);
-                if (skill !== $skill`None` && mpCost(skill) > myMp()) {
-                    throw `Cannot cast required ${skill} due to insufficient MP`
-                }
-                if (!have(ef)) {
-                    ensureEffect(ef);
+                if (haveSkill(skill)) {
+                    if (skill !== $skill`None` && mpCost(skill) > myMp()) {
+                        throw `Cannot cast required ${skill} due to insufficient MP`
+                    }
+                    if (!have(ef)) {
+                        ensureEffect(ef);
+                    }
                 }
             }
         } else if (modifier === "item") {
@@ -188,11 +191,13 @@ export class Engine extends BaseEngine<CombatActions, Task> {
             }
             for (const ef of itemSongs) {
                 const skill = toSkill(ef);
-                if (skill !== $skill`None` && mpCost(skill) > myMp()) {
-                    throw `Cannot cast required ${skill} due to insufficient MP`
-                }
-                if (!have(ef)) {
-                    ensureEffect(ef);
+                if (haveSkill(skill)) {
+                    if (skill !== $skill`None` && mpCost(skill) > myMp()) {
+                        throw `Cannot cast required ${skill} due to insufficient MP`
+                    }
+                    if (!have(ef)) {
+                        ensureEffect(ef);
+                    }
                 }
             }
         } else if (modifier === "+combat") {

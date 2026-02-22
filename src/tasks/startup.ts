@@ -1,21 +1,6 @@
 import { Task, Quest } from "../engine/task"
 import { ensureEffect } from "../engine/buff";
 import {
-    $class,
-    $classes, $coinmaster,
-    $effect,
-    $effects,
-    $familiar,
-    $item,
-    $items,
-    $location,
-    $skill, AprilingBandHelmet, AugustScepter, BurningLeaves, Clan,
-    get,
-    have,
-    Leprecondo,
-    MayamCalendar, TakerSpace
-} from "libram";
-import {
     autosell,
     buy,
     canAdventure,
@@ -30,7 +15,25 @@ import {
     storageAmount,
     mallPrice,
     toInt,
+    haveSkill,
+    print,
 } from "kolmafia";
+import {
+    $class,
+    $classes, $coinmaster,
+    $effect,
+    $effects,
+    $familiar,
+    $item,
+    $items,
+    $location,
+    $skill, AprilingBandHelmet, AugustScepter, BurningLeaves, Clan,
+    get,
+    have,
+    Leprecondo,
+    MayamCalendar,
+    TakerSpace,
+} from "libram";
 import {args} from "../args";
 import {pull} from "../util";
 
@@ -99,10 +102,12 @@ export const StartupQuest: Quest = {
             name: "Break Hippy Stone",
             after: [],
             ready: () => args.pvp,
-            completed: () => hippyStoneBroken(),
+            completed: () => hippyStoneBroken() || !get("auto_pvpEnable", false),
             do: (): void => {
-                visitUrl("peevpee.php?action=smashstone&pwd&confirm=on", true);
-                visitUrl("peevpee.php?place=fight");
+                if (get("auto_pvpEnable", false)) {
+                    visitUrl("peevpee.php?action=smashstone&pwd&confirm=on", true);
+                    visitUrl("peevpee.php?place=fight");
+                }
             },
             free: true
         },
@@ -356,12 +361,14 @@ export const BuffQuest: Quest = {
         {
             name: "April Buffs",
             after: ["Get Accordion"],
-            completed: () => Array.from(aprilBuffs.keys()).every(effect => have(effect)),
+            completed: () => Array.from(aprilBuffs.keys()).every(effect => (have(effect)) || !haveSkill(aprilBuffs.get(effect)!)),
             do: () => {
                 for (const effect of aprilBuffs.keys()) {
-                    if (!have(effect)) {
+                    if (!have(effect) && haveSkill(aprilBuffs.get(effect)!)) {
                         const skill = aprilBuffs.get(effect)!;
                         ensureEffect(skill, effect, 120);
+                    } else if (!haveSkill(aprilBuffs.get(effect)!)) {
+                        print("You don't have the skill " + aprilBuffs.get(effect) + " to ensure the effect " + effect, "red");
                     }
                 }
             },

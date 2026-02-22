@@ -2226,9 +2226,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"auto-sea@workspace:.":
+"autosea@workspace:.":
   version: 0.0.0-use.local
-  resolution: "auto-sea@workspace:."
+  resolution: "autosea@workspace:."
   dependencies:
     "@babel/cli": "npm:^7.28.0"
     "@babel/compat-data": "npm:^7.28.0"
