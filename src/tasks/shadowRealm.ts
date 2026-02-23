@@ -13,7 +13,7 @@ import {
     Macro
 } from "libram";
 import {CombatStrategy} from "grimoire-kolmafia";
-import {cliExecute, holiday, inHardcore, mpCost, myHash, myMp, print, use, useSkill, visitUrl, haveSkill, itemAmount} from "kolmafia";
+import {cliExecute, haveSkill, holiday, itemAmount, mpCost, myHash, myMp, print, use, useSkill, visitUrl} from "kolmafia";
 
 
 export const ShadowRealmTask : Quest = {
@@ -24,14 +24,14 @@ export const ShadowRealmTask : Quest = {
             after: ["Startup/Guild Pants Unlock"],
             completed: () => !have($item`closed-circuit pay phone`) || get("_shadowAffinityToday"),
             do: () => ClosedCircuitPayphone.chooseQuest(({entity}) => {
-                if (entity === $monster`Shadow Spire`) {
+                if (entity === $monster`shadow spire`) {
                     return 1;
                 } else {
                     return 2;
                 }
             }),
             free: true,
-            effects: (haveSkill($skill`The Ballad of Richie Thingfinder`) && haveSkill($skill`The Chorale of Companionship`)) ? $effects`The Ballad of Richie Thingfinder, Chorale of Companionship` : $effects`Chorale of Companionship`,
+            effects: (haveSkill($skill`The Ballad of Richie Thingfinder`) && haveSkill($skill`Chorale of Companionship`)) ? $effects`The Ballad of Richie Thingfinder, Chorale of Companionship` : $effects`Chorale of Companionship`,
             // post: () => abort()
         },
         {
@@ -63,7 +63,7 @@ export const ShadowRealmTask : Quest = {
             outfit: {
                 familiar: $familiar`Jill-of-All-Trades`,
                 modifier: "item",
-                equip: $items`Everfull Dart Holster, spring shoes, Monodent of the Sea, April Shower Thoughts shield, bat wings, toy Cupid bow, Flash Liquidizer Ultra Dousing Accessory, prismatic beret, designer sweatpants`.filter(item => itemAmount(item) > 0),
+                equip: $items`Everfull Dart Holster, spring shoes, Monodent of the Sea, April Shower Thoughts shield, bat wings, toy Cupid bow, Flash Liquidizer Ultra Dousing Accessory, prismatic beret, tearaway pants, designer sweatpants`.filter(item => itemAmount(item) > 0),
             }
         },
         {
@@ -83,7 +83,7 @@ export const ShadowRealmTask : Quest = {
             do: () => {
                 use($item`lodestone`);
                 cliExecute("cast party soundtrack");
-                let numCasts = Math.floor(myMp() / mpCost($skill`Bind Spice Ghost`));
+                const numCasts = Math.floor(myMp() / mpCost($skill`Bind Spice Ghost`));
                 useSkill($skill`Bind Spice Ghost`, numCasts);
                 use($item`Platinum Yendorian Express Card`);
             }

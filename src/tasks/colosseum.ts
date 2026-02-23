@@ -1,7 +1,7 @@
 import {Quest} from "../engine/task";
 import {ensureEffect} from "../engine/buff"
 import {$effect, $familiar, $items, $item, $location, $skill, have, get, Macro} from "libram";
-import {cliExecute, equip, myHp, myMaxhp, myMp, restoreHp, useSkill, visitUrl} from "kolmafia";
+import {cliExecute, equip, haveEffect, haveFamiliar, haveSkill, myHp, myMaxhp, myMp, restoreHp, useSkill, visitUrl} from "kolmafia";
 import {CombatStrategy} from "grimoire-kolmafia";
 
 
@@ -31,7 +31,12 @@ export const ColosseumQuest : Quest = {
             name: "Fights",
             ready: () => have($item`Mer-kin gladiator mask`) && have($item`Mer-kin gladiator tailpiece`),
             completed: () => get("lastColosseumRoundWon") >= 12,
-            do: $location`Mer-kin Colosseum`,
+            do: () => {
+                ensureEffect($skill`Song of Sauce`, $effect`Song of Sauce`, 1);
+                ensureEffect($skill`Heartstone: %buff`, $effect`Ultraheart`, 1);
+                cliExecute("restore hp");
+                $location`Mer-kin Colosseum`;
+            },
             combat: new CombatStrategy().macro((): Macro => {
                 return Macro.trySkillRepeat($skill`Saucegeyser`)
             }),
@@ -39,7 +44,7 @@ export const ColosseumQuest : Quest = {
             avgturns: 12,
             outfit: {
                 modifier: "mysticality",
-                familiar: $familiar`Foul Ball`,
+                familiar: $familiar`Tiny Plastic Santa Claus Skeleton`,
                 equip: $items`Everfull Dart Holster, spring shoes, bat wings, Monodent of the Sea, august scepter, Mer-kin gladiator mask, Mer-kin gladiator tailpiece`
             }
         },
@@ -48,10 +53,14 @@ export const ColosseumQuest : Quest = {
             after: ["Fights"],
             completed: () => get("isMerkinGladiatorChampion") || get("telescopeLookedHigh"),
             do: () => {
-                // equip($item`April Shower Thoughts shield`)
-                // useSkill($skill`Simmer`);
-                ensureEffect($skill`Elron's Explosive Etude`, $effect`Elron's Explosive Etude`, 1);
+                if (!get("_aprilShowerSimmer") && have($item`April Shower Thoughts shield`)) {
+                    equip($item`April Shower Thoughts shield`)
+                    useSkill($skill`Simmer`);
+                }
+                if (haveSkill($skill`Elron's Explosive Etude`)) { ensureEffect($skill`Elron's Explosive Etude`, $effect`Elron's Explosive Etude`, 1); }
                 ensureEffect($skill`Arched Eyebrow of the Archmage`, $effect`Arched Eyebrow of the Archmage`, 1);
+                ensureEffect($skill`Song of Sauce`, $effect`Song of Sauce`, 1);
+                ensureEffect($skill`Heartstone: %buff`, $effect`Ultraheart`, 1);
                 cliExecute("telescope high");
                 cliExecute("monorail");
                 cliExecute("buy 5 glittery mascara; use 5 glittery mascara");
@@ -63,14 +72,17 @@ export const ColosseumQuest : Quest = {
             after: ["Buff for hard fights"],
             completed: () => get("isMerkinGladiatorChampion"),
             do: $location`Mer-kin Colosseum`,
-            combat: new CombatStrategy().macro((): Macro => {
+            /*combat: new CombatStrategy().macro((): Macro => {
                 return Macro.trySkillRepeat($skill`Raise Backup Dancer`)
+            }),*/
+            combat: new CombatStrategy().macro((): Macro => {
+                return Macro.trySkillRepeat($skill`Saucegeyser`)
             }),
             minturns: 3,
             avgturns: 3,
             outfit: {
                 modifier: "mysticality",
-                familiar: $familiar`Foul Ball`,
+                familiar: haveFamiliar($familiar`Foul Ball`) ? $familiar`Foul Ball` : $familiar`Tiny Plastic Santa Claus Skeleton`,
                 equip: $items`Everfull Dart Holster, spring shoes, bat wings, Monodent of the Sea, august scepter, Mer-kin gladiator mask, Mer-kin gladiator tailpiece`
             }
         },

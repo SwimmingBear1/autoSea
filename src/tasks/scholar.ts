@@ -18,6 +18,7 @@ import {
     abort,
     buy,
     cliExecute, closetAmount, getCounter,
+    haveFamiliar,
     inHardcore, myFamiliar,
     myHash, myHp, myMaxhp, myMaxmp, myMeat, myMp, putCloset, runChoice, totalFreeRests,
     use, useFamiliar,
@@ -318,7 +319,7 @@ export const ScholarTask : Quest = {
         {
             name: "Abyss Mom",
             after: ["Scholar Abyss"],
-            completed: () => step("questS02Monkees") == 999,
+            completed: () => step("questS02Monkees") === 999,
             do: $location`The Caliginous Abyss`,
             outfit: {
                 equip: $items`black glass`
@@ -345,7 +346,7 @@ export const ScholarTask : Quest = {
             combat: new CombatStrategy().run(),
             outfit: {
                 equip: $items`Mer-kin scholar mask, Mer-kin scholar tailpiece, spring shoes`,
-                familiar: $familiar`jumpsuited hound dog`,
+                familiar: haveFamiliar($familiar`Jumpsuited Hound Dog`) ? $familiar`Jumpsuited Hound Dog` : $familiar`Jill-of-All-Trades`,
                 modifier: "+combat"
             },
             choices: {701: 1}
